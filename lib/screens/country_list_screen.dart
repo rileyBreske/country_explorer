@@ -16,6 +16,7 @@ class CountryListScreen extends StatefulWidget {
 
 class _CountryListScreenState extends State<CountryListScreen> {
   late Future<List<Country>> futureCountries;
+  String searchText = '';
 
   @override
   void initState() {
@@ -64,23 +65,52 @@ class _CountryListScreenState extends State<CountryListScreen> {
             return const Center(child: Text('No countries found.'));
           }
 
-          return ListView.builder(
-            itemCount: countries.length,
-            itemBuilder: (context, index) {
-              final country = countries[index];
-              return CountryCard(
-                country: country,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          CountryDetailScreen(country: country),
-                    ),
-                  );
-                },
-              );
-            },
+          final filtered = countries
+              .where(
+                (c) => c.name.toLowerCase().contains(searchText.toLowerCase()),
+              )
+              .toList();
+
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    hintText: 'Search countries',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      searchText = value;
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                child: filtered.isEmpty
+                    ? const Center(child: Text('No matches.'))
+                    : ListView.builder(
+                        itemCount: filtered.length,
+                        itemBuilder: (context, index) {
+                          final country = filtered[index];
+                          return CountryCard(
+                            country: country,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      CountryDetailScreen(country: country),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ],
           );
         },
       ),

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:country_explorer/main.dart';
 import 'package:country_explorer/models/country.dart';
 import 'package:country_explorer/services/country_service.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -55,6 +56,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Tokyo'), findsOneWidget);
+  });
+
+  testWidgets('search filters the list', (tester) async {
+    await tester.pumpWidget(MyApp(service: fakeService(200, testData)));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'jap');
+    await tester.pump();
+    expect(find.text('Japan'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'xyz');
+    await tester.pump();
+    expect(find.text('No matches.'), findsOneWidget);
   });
 
   testWidgets('shows error and retry button', (tester) async {
