@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:country_explorer/main.dart';
 import 'package:country_explorer/models/country.dart';
+import 'package:country_explorer/screens/country_list_screen.dart';
 import 'package:country_explorer/services/country_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,6 +39,13 @@ CountryService fakeService(int statusCode, Object body) {
   );
 }
 
+// MyApp needs Firebase now, so the tests build the country list screen directly
+Widget testApp(CountryService service) {
+  return MaterialApp(
+    home: CountryListScreen(service: service, email: 'test@example.com'),
+  );
+}
+
 void main() {
   test('Country.fromJson handles missing fields', () {
     final country = Country.fromJson({'code': 'AQ', 'name': 'Antarctica'});
@@ -47,10 +54,11 @@ void main() {
   });
 
   testWidgets('shows list and opens detail screen', (tester) async {
-    await tester.pumpWidget(MyApp(service: fakeService(200, testData)));
+    await tester.pumpWidget(testApp(fakeService(200, testData)));
     await tester.pumpAndSettle();
 
     expect(find.text('Japan'), findsOneWidget);
+    expect(find.text('Welcome! test@example.com'), findsOneWidget);
 
     await tester.tap(find.text('Japan'));
     await tester.pumpAndSettle();
@@ -59,7 +67,7 @@ void main() {
   });
 
   testWidgets('search filters the list', (tester) async {
-    await tester.pumpWidget(MyApp(service: fakeService(200, testData)));
+    await tester.pumpWidget(testApp(fakeService(200, testData)));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), 'jap');
@@ -72,7 +80,7 @@ void main() {
   });
 
   testWidgets('shows error and retry button', (tester) async {
-    await tester.pumpWidget(MyApp(service: fakeService(500, {})));
+    await tester.pumpWidget(testApp(fakeService(500, {})));
     await tester.pumpAndSettle();
 
     expect(find.text('Could not load countries.'), findsOneWidget);
