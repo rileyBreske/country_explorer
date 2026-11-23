@@ -6,6 +6,8 @@ You have to sign up or log in with an email and password before you can see the 
 
 ## Running it
 
+The Firebase config files aren't in the repo since they have API keys in them, so do the Firebase setup steps below first. Then:
+
 ```
 flutter pub get
 flutter run
@@ -18,15 +20,15 @@ I tested it on the iPhone simulator.
 email: tester1795411132464@example.com
 password: testpass123
 
-Or just make a new account on the sign up screen.
+This only works with my Firebase project. If you set up your own, just make a new account on the sign up screen.
 
 ## Firebase setup
 
-If you want to use your own Firebase project:
-
 1. Make a project at console.firebase.google.com
 2. Go to Authentication and turn on Email/Password
-3. Run `flutterfire configure` in this folder and pick your project
+3. Run `flutterfire configure` in this folder and pick your project (pick android and ios)
+
+That makes `lib/firebase_options.dart`, `android/app/google-services.json`, and `ios/Runner/GoogleService-Info.plist`.
 
 ## Notes
 
